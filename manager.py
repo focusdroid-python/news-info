@@ -32,6 +32,7 @@ class Config(object):
 
 app.config.from_object(Config)
 
+
 db = SQLAlchemy(app)
 
 # 创建redis对象
