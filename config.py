@@ -29,18 +29,18 @@ class DevelopConfig(Config):
 
 # 生产环境配置信息
 class ProductConfig(Config):
-    DEBUG = False
+    pass
 
 
 # 测试环境
 class TestConfig(Config):
-    pass
+    DEBUG = False
 
 
 # 提供统一的访问入口
 config_dict = {
     "develop": DevelopConfig,
-    "peoduct": ProductConfig,
+    "product": ProductConfig,
     "test": TestConfig
 }
 
