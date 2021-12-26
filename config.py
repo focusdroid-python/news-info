@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from flask import Flask
@@ -25,11 +26,11 @@ class Config(object):
 
 # 开发环境配置信息
 class DevelopConfig(Config):
-    pass
+    LEVEL_NAME = logging.DEBUG
 
 # 生产环境配置信息
 class ProductConfig(Config):
-    pass
+    LEVEL_NAME = logging.ERROR
 
 
 # 测试环境
