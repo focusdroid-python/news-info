@@ -52,7 +52,7 @@ def hello_world():
 
     # 测试session存储
     session['age'] = 30
-    session['address'] = 'beijing'
+    session['address'] = 'shanghai'
 
 
     return 'hello'
