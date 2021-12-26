@@ -12,9 +12,10 @@ from config import config_dict
 # 定义redis变量
 redis_store = None
 
+db = None
+
 def create_app(config_name):
     # 调用日志方法，记录程序运行信息
-    log_file()
     app = Flask(__name__)
 
     # 根据传入的配置类名称，取出对应的配置类
@@ -25,6 +26,7 @@ def create_app(config_name):
 
     app.config.from_object(config)
 
+    global db
     db = SQLAlchemy(app)
 
     # 创建redis对象
