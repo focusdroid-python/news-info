@@ -12,7 +12,8 @@ from config import config_dict
 # 定义redis变量
 redis_store = None
 
-db = None
+# db = None
+db = SQLAlchemy()
 
 def create_app(config_name):
     # 调用日志方法，记录程序运行信息
@@ -26,8 +27,7 @@ def create_app(config_name):
 
     app.config.from_object(config)
 
-    global db
-    db = SQLAlchemy(app)
+    db.init_app(app)
 
     # 创建redis对象
     global redis_store
