@@ -11,7 +11,8 @@ class Config(object):
     SECRET_KEY = 'TBSEBFAF8998eb9afenajfv'
 
     # mysql数据库配置信息
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:mysql@localhost:3306/info'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:mysql@localhost:3306/info'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@localhost:3306/info'
     SQLALCHEMY_TRACK_MODIFICATIONS = Flask
 
     # redis 配置信息
