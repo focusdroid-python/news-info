@@ -1,6 +1,6 @@
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from info import create_app, db
+from info import create_app, db, models # 导入modules 让程序知道有modules存在
 
 app = create_app('develop')
 
