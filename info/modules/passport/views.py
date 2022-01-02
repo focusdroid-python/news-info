@@ -11,6 +11,15 @@ from utils.response_code import RET
 import json
 import re
 
+@passport_blue.route('/logout', methods=['POST'])
+def logout():
+    '''用户退出'''
+    # 1. 清楚session信息
+    session.pop('user_id', None)
+
+    # 2. 返回响应
+    return jsonify(code=RET.OK, data={}, message='退出成功')
+
 @passport_blue.route('/login', methods=['POST'])
 def login():
     '''
@@ -56,7 +65,7 @@ def login():
     # 7. 返回响应
     return jsonify(code=RET.OK, data={}, message='登录成功')
 
-@passport_blue.route('register', methods=['POST'])
+@passport_blue.route('/register', methods=['POST'])
 def register():
     '''
     注册
@@ -127,7 +136,6 @@ def register():
     # 10. 返回响应
     return jsonify(code=RET.OK, message='注册成功')
 
-
 @passport_blue.route('/sms_code', methods=['POST'])
 def sms_code():
     # accId = '8aaf07087249953401728cd13b4420f1'
@@ -174,7 +182,7 @@ def sms_code():
     # 生成随机码
     sms_code = '%06d'%random.randint(0, 999999)
 
-    # # 4. 发送短信调用封装好的发送短信代码
+    # # 4. 发送短信调用封装好的发送短信代码， 目前没有短信直接接口返回短信验证码
     # sdk = SmsSDK(accId, accToken, appId)
     # tid = '容联云通讯平台创建的模板'
     # mobile = mobile
