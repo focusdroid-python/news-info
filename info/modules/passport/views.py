@@ -1,6 +1,8 @@
 import random
 
 # from ronglian_sms_sdk import SmsSDK
+from datetime import datetime
+
 from flask import make_response, request, current_app, jsonify, session
 from info import redis_store, constants, db
 from info.models import User
@@ -61,6 +63,14 @@ def login():
 
     # 6. 讲用户登录信息保存在session中
     session['user_id'] = user.id
+
+    # 6.1记录用户最后一次登录时间
+    user.last_login = datetime.now()
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(code=RET.DBERR, data={}, message='时间记录失败')
 
     # 7. 返回响应
     return jsonify(code=RET.OK, data={}, message='登录成功')
