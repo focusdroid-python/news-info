@@ -38,12 +38,12 @@ class User(BaseModel, db.Model):
     last_login = db.Column(db.DateTime, default=datetime.now)  # 最后一次登录时间
     is_admin = db.Column(db.Boolean, default=False)
     signature = db.Column(db.String(512))  # 用户签名
-    gender = db.Column(  # 订单的状态
+    gender = db.Column(db.String(10),  # 订单的状态
         db.Enum(
-            "MAN",  # 男
-            "WOMAN"  # 女
+            "M",  # 男
+            "F"  # 女
         ),
-        default="MAN")
+        default="M")
 
     # 当前用户收藏的所有新闻
     collection_news = db.relationship("News", secondary=tb_user_collection, lazy="dynamic")  # 用户收藏的新闻
@@ -58,14 +58,17 @@ class User(BaseModel, db.Model):
     # 当前用户所发布的新闻
     news_list = db.relationship('News', backref='user', lazy='dynamic')
 
+    # 使用@property装饰的方法，可以当成书醒来使用，比如print(user.password)
     @property
     def password(self):
         raise AttributeError("当前属性不可读")
 
     @password.setter
     def password(self, value):
+        # 使用系统加密算法
         self.password_hash = generate_password_hash(value)
 
+    # 传递密文和明文方法返回时True或者False
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -75,7 +78,7 @@ class User(BaseModel, db.Model):
             "nick_name": self.nick_name,
             "avatar_url": constants.QINIU_DOMIN_PREFIX + self.avatar_url if self.avatar_url else "",
             "mobile": self.mobile,
-            "gender": self.gender if self.gender else "MAN",
+            "gender": self.gender if self.gender else "M",
             "signature": self.signature if self.signature else "",
             "followers_count": self.followers.count(),
             "news_count": self.news_list.count()
