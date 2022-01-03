@@ -32,10 +32,16 @@ def newList():
     # 3.分页查询
     try:
         # 查询全部分类中指定id的分类，分组，排序，分页
-        filters = ''
+        filters = []
         if int(categorys_id) != 1:
-            filters = (News.category_id == int(categorys_id))
-        paginate = News.query.filter(filters).order_by(News.create_time.desc()).paginate(page_num, page_size, False)  # paginate 分页查询
+            filters.append(News.category_id == int(categorys_id))
+        paginate = News.query.filter(*filters).order_by(News.create_time.desc()).paginate(page_num, page_size, False)  # paginate 分页查询
+
+        # filters = []
+        # if int(categorys_id) != 1:
+        #     filters = (News.category_id == int(categorys_id))
+        # filters.append(News.title === title) # 可以加很多过滤条件
+        # paginate = News.query.filter(*filters).order_by(News.create_time.desc()).paginate(page_num, page_size,False)  # paginate 分页查询 可以append多重条件
 
         # if int(categorys_id) == 1:
         #     paginate = News.query.filter().order_by(News.create_time.desc()).paginate(page_num, page_size, False) # paginate 分页查询
@@ -55,7 +61,7 @@ def newList():
     for item in items:
         news_list.append(item.to_dict())
     # 6.写到参数返回响应
-    return jsonify(code=RET.OK, total=total, current=current, data={'news_list': news_list}, message='success')
+    return jsonify(code=RET.OK, data={'news_list': news_list, 'total': total, 'current': current}, message='success')
 
 
 @index_blue.route('/itemize')
