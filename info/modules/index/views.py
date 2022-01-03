@@ -1,10 +1,28 @@
 from flask import session, current_app, jsonify
 from . import index_blue
-from info.models import User
+from info.models import User, News
 from info.utils.response_code import RET
 
 
+@index_blue.route('/hot', methods=['GET'])
+def hotNew():
+    '''
+    热门数据
+    :return:
+    '''
+    # 根据点击量查询热门数据
+    try:
+        news = News.query.order_by(News.clicks.desc()).limit(10).all()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(code=RET.DBERR, message='查询错误')
 
+    news_list = []
+    for item in news:
+        news_list.append(item.to_dict())
+
+
+    return jsonify(code=RET.OK, data={'data': news_list}, message='success')
 
 @index_blue.route('/home', methods=['GET'])
 def home():

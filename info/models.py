@@ -80,8 +80,8 @@ class User(BaseModel, db.Model):
             "mobile": self.mobile,
             "gender": self.gender if self.gender else "M",
             "signature": self.signature if self.signature else "",
-            # "followers_count": self.followers.count(),
-            "news_count": self.news_list.count()
+            "followers_count": self.followers.count() if self.followers else "",
+            "news_count": self.news_list.count() if self.news_list else ""
         }
         return resp_dict
 
@@ -146,7 +146,7 @@ class News(BaseModel, db.Model):
             "content": self.content,
             "comments_count": self.comments.count(),
             "clicks": self.clicks,
-            "category": self.category.to_dict(),
+            "category": self.category.to_dict() if self.category else None,
             "index_image_url": self.index_image_url,
             "author": self.user.to_dict() if self.user else None
         }

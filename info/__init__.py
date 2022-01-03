@@ -37,7 +37,7 @@ def create_app(config_name):
     Session(app)
 
     # 使用CSRFProtect 保护应用
-    CSRFProtect(app)
+    # CSRFProtect(app)
 
     # 将蓝图注册到app中
     from info.modules.index import index_blue
@@ -47,11 +47,11 @@ def create_app(config_name):
     app.register_blueprint(passport_blue)
 
     # 使用请求钩子拦截所有请求，通过在cookie中设置csrs_token
-    @app.after_request
-    def after_request(resp=None):
-        csrf_token = generate_csrf() # 获取csrftoken
-        resp.set_cookie('csrf_token', csrf_token) # 将csrf_token保存在浏览器中
-        return resp
+    # @app.after_request
+    # def after_request(resp=None):
+    #     csrf_token = generate_csrf() # 获取csrftoken
+    #     resp.set_cookie('csrf_token', csrf_token) # 将csrf_token保存在浏览器中
+    #     return resp
 
     # "X-CSRFToken", "X-CSRF-Token" 前端在headers中保存着两个字段
 
