@@ -1,7 +1,7 @@
 from flask import session, current_app, jsonify
 from . import index_blue
 from info.models import User
-from utils.response_code import RET
+from info.utils.response_code import RET
 
 
 

@@ -8,8 +8,8 @@ from info import redis_store, constants, db
 from info.models import User
 
 from . import passport_blue
-from utils.captcha.captcha import captcha
-from utils.response_code import RET
+from info.utils.captcha.captcha import captcha
+from info.utils.response_code import RET
 import json
 import re
 
@@ -66,11 +66,11 @@ def login():
 
     # 6.1记录用户最后一次登录时间
     user.last_login = datetime.now()
-    try:
-        db.session.commit()
-    except Exception as e:
-        current_app.logger.error(e)
-        return jsonify(code=RET.DBERR, data={}, message='时间记录失败')
+    # try:
+    #     db.session.commit()
+    # except Exception as e:
+    #     current_app.logger.error(e)
+    #     return jsonify(code=RET.DBERR, data={}, message='时间记录失败')
 
     # 7. 返回响应
     return jsonify(code=RET.OK, data={}, message='登录成功')

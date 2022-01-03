@@ -14,6 +14,7 @@ class Config(object):
     # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:mysql@localhost:3306/info'
     SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@localhost:3306/info'
     SQLALCHEMY_TRACK_MODIFICATIONS = Flask
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True # 每当改变数据库内容，是凸函数结束的时候都会自动提交
 
     # redis 配置信息
     REDIS_HOST = '127.0.0.1'
