@@ -46,6 +46,10 @@ def create_app(config_name):
     from info.modules.passport import passport_blue
     app.register_blueprint(passport_blue)
 
+    # 将news认证蓝图注册到app中
+    from info.mofules.news import news_list
+    app.register_blueprint(news_list)
+
     # 使用请求钩子拦截所有请求，通过在cookie中设置csrs_token
     # @app.after_request
     # def after_request(resp=None):
