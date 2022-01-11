@@ -1,7 +1,8 @@
-from flask import session, current_app, jsonify, request
+from flask import session, current_app, jsonify, request, g
 from . import index_blue
 from info.models import User, News, Category
 from info.utils.response_code import RET
+from info.utils.common import user_login_data
 
 @index_blue.route('/newall')
 def newList():
@@ -100,22 +101,29 @@ def hotNew():
 
     return jsonify(code=RET.OK, data={'data': news_list}, message='success')
 
+
+
 @index_blue.route('/home', methods=['GET'])
+@user_login_data
 def home():
     # 获取用户的登录信息
-    user_id = session.get('user_id')
-
-    # 2. t通过user_id取出用户对象
-    user = None
-    if user_id:
-        try:
-            user = User.query.get(user_id)
-        except Exception as e:
-            current_app.logger.error(e)
-            return jsonify(code=RET.DBERR, message='用户信息查询失败')
+    # user_id = session.get('user_id')
+    #
+    # # 2. t通过user_id取出用户对象
+    # user = None
+    # if user_id:
+    #     try:
+    #         user = User.query.get(user_id)
+    #     except Exception as e:
+    #         current_app.logger.error(e)
+    #         return jsonify(code=RET.DBERR, message='用户信息查询失败')
 
     # 3. 拼接用户数据
+    # data = {
+    #     'user_info': user.to_dict() if user else ''
+    # }
+
     data = {
-        'user_info': user.to_dict() if user else ''
+        'user_info': g.user.to_dict() if g.user else ''
     }
     return jsonify(code=RET.OK, data=data, message='用户信息')
