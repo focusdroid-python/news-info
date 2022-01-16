@@ -107,6 +107,17 @@ python manager.py db upgrade
 ### 18. 分页切换调试
 ### 19. 新闻详情页展示
 
+#### 新闻收藏功能接口
+    - 请求路径 /news/news_collect
+    - 请求方式 POST
+    - 请求参数： news_id, action, g.user
+    - 返回值 error, errmsg
+    | ------- | --------|
+    参数名     类型      是否必须    参数说明
+    news_id   int       是         新闻编号
+    action    string    是         收藏或者取消收藏  collect   cancel_collect
+
+
 
 
 
