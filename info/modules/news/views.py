@@ -1,10 +1,61 @@
 from flask import request, jsonify, current_app, abort, g
-from info.models import News
+from info.models import News, Comment
 from info.utils.response_code import RET
 from . import new_blue
 import json
 from info import db
 from info.utils.common import user_login_data
+
+@new_blue.route('/news_comment', methods=['POST'])
+@user_login_data
+def news_comment():
+    '''评论部分
+    # 1. 判断用户是否登录
+    # 2. 获取参数
+    # 3. 校验参数为空校验
+    # 4. 根据新闻编号取出来对象，判断新闻是否存在
+    # 5. 创建评论对象
+    # 6. 保存评论对象到数据库中
+    # 7. 返回响应
+    '''
+    # 1. 判断用户是否登录
+    if not g.user:
+        return jsonify(error=RET.NODATA, message='用户未登录')
+
+    # 2. 获取参数
+    user_id = request.json.get('user_id')
+    news_id = request.json.get('news_id')
+    content = request.json.get('content')
+    parent_id = request.json.get('comment')
+
+    # 3. 校验参数为空校验
+    if not all([news_id, content]):
+        return jsonify(error=RET.PARAMERR, message='参数不全')
+
+    # 4. 根据新闻编号取出来对象，判断新闻是否存在
+    try:
+        new = News.query.get(news_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(error=RET.DBERR, message='数据库查询错误')
+    if not new: return jsonify(error=RET.NODATA, message='为查询该条新闻详情')
+
+    # 5. 创建评论对象
+    comment = Comment()
+    comment.user_id = user_id
+    comment.news_id = news_id
+    comment.content = content
+    if comment.parent_id: comment.parent_id = parent_id
+    # 6. 保存评论对象到数据库中
+    try:
+        db.session.add(comment)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(error=RET.DBERR, message='【评论失败')
+    # 7. 返回响应
+    return jsonify(error=RET.OK, data=comment.to_dict(), message='评论成功')
+
 
 @new_blue.route('/news_collect', methods=['POST'])
 @user_login_data
@@ -102,10 +153,24 @@ def new_list():
         if news in g.user.collection_news:
             is_collected = True
 
+    # 获取新闻的评论
+    try:
+        comments = Comment.query.filter(Comment.news_id == news_id).order_by(Comment.create_time.desc()).all()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(code=RET.DBERR, message='查询失败')
+
+    # 讲评论的对象列表转成字典
+    comment_list = []
+    for comment in comments:
+        comment_list.append(comment.to_dict())
+
+
     data = {
         'news_info': news.to_dict() if news else {},
         'user_info': g.user.to_dict() if g.user else '',
-        'is_collected': is_collected
+        'is_collected': is_collected,
+        'comment': comment_list
     }
 
     # 2. 写到数据渲染页面

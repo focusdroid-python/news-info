@@ -117,6 +117,23 @@ python manager.py db upgrade
     news_id   int       是         新闻编号
     action    string    是         收藏或者取消收藏  collect   cancel_collect
 
+#### 新闻评论后端接口
+    # 1. 判断用户是否登录
+    # 2. 获取参数
+    # 3. 校验参数为空校验
+    # 4. 根据新闻编号取出来对象，判断新闻是否存在
+    # 5. 创建评论对象
+    # 6. 保存评论对象到数据库中 
+    # 7. 返回响应
+    # 5. 
+    - 请求路径 /news/news_comment
+    - 请求方式 POST
+    - 请求参数 news_id  comment   parent_id   g.user
+    - 返回值 errno message
+    | -------- | -------- |
+    news_id   int    是     新闻编号
+    comment   string 是     评论内容
+    parent_id int    是     回复评论的id
 
 
 
