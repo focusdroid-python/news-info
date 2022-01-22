@@ -10,11 +10,6 @@ python manager.py db upgrade
 
 
 
-
-
-
-
-
 ### 4. 短信验证码
 
  - 目的：完善短信接口的编写
@@ -134,6 +129,30 @@ python manager.py db upgrade
     news_id   int    是     新闻编号
     comment   string 是     评论内容
     parent_id int    是     回复评论的id
+
+#### 评论点赞
+    # 1. 判断用户是否登录
+    # 2. 获取参数 
+    # 3. 校验参数
+    # 4. 操作类型进行校验
+    # 5. 通过评论编号查询品论对象，并存在是否存在
+    # 6. 根据操作类型点赞取消
+    # 7. 返回响应
+    # 3.
+    # 1. 请求路径 /news/comment_like
+    # 2. 请求方式： POST
+    # 3. 请求参数： news_id comment_id  action, g.user
+    # 4. 参数解释
+    | -----------  |  --------------- |
+    参数名             类型          是否必须        参数说明
+    news_id             string       是              新闻编号
+    comment_id          int           True          评论编号
+    action              string         True         点赞操作类型，add  remove
+    # 1. 
+    # 1. 
+    # 1. 
+    # 1. 
+    # 1. 
 
 
 

@@ -1,10 +1,78 @@
 from flask import request, jsonify, current_app, abort, g
-from info.models import News, Comment
+from info.models import News, Comment, CommentLike
 from info.utils.response_code import RET
 from . import new_blue
 import json
 from info import db
 from info.utils.common import user_login_data
+
+
+@new_blue.route('/comment_like', methods=['POST'])
+@user_login_data
+def comment_like():
+    '''
+    /comment_like
+        # 1. 判断用户是否登录
+    # 2. 获取参数
+    # 3. 校验参数
+    # 4. 操作类型进行校验
+    # 5. 通过评论编号查询品论对象，并存在是否存在
+    # 6. 根据操作类型点赞取消
+    # 7. 返回响应
+    :return:
+    '''
+    # 1. 判断用户是否登录
+    if not g.user:
+        return jsonify(error=RET.NODATA, message='用户未登录')
+    # 2. 获取参数
+    # news_id = request.json.get('news_id')
+    comment_id = request.json.get('comment_id')
+    action = request.json.get('action')
+    # 3. 校验参数
+    if not all([comment_id, action]):
+        return jsonify(error=RET.NODATA, message='参数不全')
+    # 4. 操作类型进行校验
+    if not action in ['add', 'remove']:
+        return jsonify(error=RET.NODATA, message='操作类型有误')
+    # 5. 通过评论编号查询品论对象，并存在是否存在
+
+    try:
+        comment = Comment.query.get(comment_id)
+        # news = News.query.get(news_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(error=RET.DBERR, message='查询失败')
+
+    if not comment:
+        return jsonify(error=RET.NODATA, message='该新闻或点赞不存在')
+    # 6. 根据操作类型点赞取消
+    if action == 'add':
+        # 判断用户是否对该评论点过赞，
+        comment_like = Comment.query.filter(CommentLike.user_id == g.user_id, CommentLike.comment_id == comment_id).first()
+        if not comment_like:
+            # 创建点赞对象
+            comment_like = CommentLike()
+            comment_like.user_id = g.user_id
+            comment_like.comment_id = comment_id
+
+            db.session.add(comment_like)
+            # 讲该评论的点赞数量+1
+            comment.like_count += 1
+            db.session.commit()
+    else:
+        comment_like = Comment.query.filter(CommentLike.user_id == g.user_id, CommentLike.comment_id == comment_id).first()
+        if comment_like:
+            # 创建点赞对象
+            db.session.delete(comment_like)
+
+
+            # 讲该评论的点赞数量+1
+            if comment.like_count > 0:
+                comment.like_count += 1
+            db.session.commit()
+    # 7. 返回响应
+    return jsonify(errno=RET.OK, message='success')
+
 
 @new_blue.route('/news_comment', methods=['POST'])
 @user_login_data
