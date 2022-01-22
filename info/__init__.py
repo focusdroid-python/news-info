@@ -50,6 +50,9 @@ def create_app(config_name):
     from info.modules.news import new_blue
     app.register_blueprint(new_blue)
 
+    from info.modules.user import user_blue
+    app.register_blueprint(user_blue)
+
     # 使用请求钩子拦截所有请求，通过在cookie中设置csrs_token
     # @app.after_request
     # def after_request(resp=None):

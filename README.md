@@ -148,10 +148,15 @@ python manager.py db upgrade
     news_id             string       是              新闻编号
     comment_id          int           True          评论编号
     action              string         True         点赞操作类型，add  remove
-    # 1. 
-    # 1. 
-    # 1. 
-    # 1. 
+
+### 用户信息修改和展示
+    # 1. 判断请求方式，如果是get请求，返回用户数据，如果是post就是提交数据
+    # 2. 写到用户数据，渲染页面
+    # 3. 如果是post请求
+    # 4. 获取参数
+    # 5. 校验参数
+    # 6. 修改用户数据
+    # 7. 返回响应
     # 1. 
 
 

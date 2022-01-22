@@ -26,6 +26,7 @@ def comment_like():
         return jsonify(error=RET.NODATA, message='用户未登录')
     # 2. 获取参数
     # news_id = request.json.get('news_id')
+    user_id = request.json.get('user_id')
     comment_id = request.json.get('comment_id')
     action = request.json.get('action')
     # 3. 校验参数
@@ -48,30 +49,33 @@ def comment_like():
     # 6. 根据操作类型点赞取消
     if action == 'add':
         # 判断用户是否对该评论点过赞，
-        comment_like = Comment.query.filter(CommentLike.user_id == g.user_id, CommentLike.comment_id == comment_id).first()
+        print(g.user)
+        print(g.user.id)
+        # comment_like = Comment.query.filter(CommentLike.user_id == g.user.id, CommentLike.comment_id == comment_id).first()
+        # comment_like = Comment.query.filter(CommentLike.user_id == user_id, CommentLike.comment_id == comment_id).first()
+        comment_like = Comment.query.filter(CommentLike.user_id == user_id, CommentLike.comment_id == comment_id).first()
+        print(comment_like)
         if not comment_like:
             # 创建点赞对象
             comment_like = CommentLike()
-            comment_like.user_id = g.user_id
+            comment_like.user_id = g.user.id
             comment_like.comment_id = comment_id
 
+            comment.like_count += 1
             db.session.add(comment_like)
             # 讲该评论的点赞数量+1
-            comment.like_count += 1
             db.session.commit()
     else:
         comment_like = Comment.query.filter(CommentLike.user_id == g.user_id, CommentLike.comment_id == comment_id).first()
         if comment_like:
             # 创建点赞对象
             db.session.delete(comment_like)
-
-
             # 讲该评论的点赞数量+1
             if comment.like_count > 0:
                 comment.like_count += 1
             db.session.commit()
     # 7. 返回响应
-    return jsonify(errno=RET.OK, message='success')
+    return jsonify(errno=RET.OK, data=comment_like, message='success')
 
 
 @new_blue.route('/news_comment', methods=['POST'])
