@@ -2,8 +2,63 @@ from flask import jsonify, g, request, current_app
 from . import user_blue
 from info.utils.common import user_login_data
 from info.utils.response_code import RET
-from info.models import User
+from info.models import User, News
 from info import db
+
+
+@user_blue.route('/collection')
+@user_login_data
+def collection():
+    '''
+        # 1. get请求，获取参数
+    # 2. 校验参数(参数类型转换)
+    # 3. 分液参训收藏新闻
+    # 4. 获取分页对象属性，总页数，当前页， 当前页对象列表
+    # 5. 返回响应
+    获取收藏列表
+    :return:
+    '''
+    if not g.user:
+        return jsonify(error=RET.NODATA, messgae='用户未登录')
+    # 1. get请求，获取参数
+    # user_id = request.args.get('user_id')
+    page_num = request.args.get('page_num', '1')
+    page_size = request.args.get('page_size', '10')
+
+    # 2. 校验参数(参数类型转换)
+    try:
+        page_num = int(page_num)
+        page_size = int(page_size)
+    except Exception as e:
+        page_num = 1
+        page_size = 10
+
+
+    # 3. 分页查询收藏新闻
+    try:
+        paginate = User.query.get(g.user.id).collection_news.order_by(News.create_time.desc()).paginate(page_num, page_size, False)
+    except Exception as e:
+        current_app.logger.error(e)
+    # 4. 获取分页对象属性，总页数，当前页， 当前页对象列表
+    total = paginate.pages
+    currentPage = paginate.page
+    items = paginate.items
+
+    # 5.讲对象列表装成字典列表
+    new_list = []
+    for news in items:
+        new_list.append(news.to_dict())
+
+    # 6. 拼接数据，转成字典列表
+    data = {
+        'total': total,
+        'currentPage': currentPage,
+        'new_list': new_list,
+    }
+
+    # 7. 返回响应
+    return jsonify(errno=RET.OK, data=data, message='success')
+
 
 
 @user_blue.route('/password', methods=['GET', 'POST'])
