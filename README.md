@@ -160,6 +160,38 @@ python manager.py db upgrade
     # 1. 
 
 
+### 修改密码
+    # 1. post请求，获取参数
+    # 2. 校验参数
+    # 3. 旧密码是否正确
+    # 4. 设置新密码
+    # 5. 返回响应
+    # 1. 请求路径 /user/password
+    # 2. 请求方式： POST
+    # 3. 请求参数： current_password new_password
+    # 4. 参数解释
+    | -----------  |  --------------- |
+    参数名             类型          是否必须        参数说明
+    current_password   string       是              旧密码
+    new_password       string           True        新密码
+
+
+### 新闻收藏列表
+    # 1. post请求，获取参数
+    # 2. 校验参数
+    # 3. 旧密码是否正确
+    # 4. 设置新密码
+    # 5. 返回响应
+    # 1. 请求路径 /user/collection
+    # 2. 请求方式： GET
+    # 3. 请求参数： user_id page_num page_size
+    # 4. 参数解释
+    | -----------  |  --------------- |
+    参数名             类型          是否必须        参数说明
+    user_id   string       是              旧密码
+    page_num       string           True        新密码
+    page_size       string           True        新密码
+
 
 
 
