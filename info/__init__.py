@@ -39,10 +39,11 @@ def create_app(config_name):
     # 使用CSRFProtect 保护应用
     # CSRFProtect(app)
 
-    # 将蓝图注册到app中
+    # 将首页蓝图注册到app中
     from info.modules.index import index_blue
     app.register_blueprint(index_blue)
 
+    # 将认证蓝图passport_blue注册到app中
     from info.modules.passport import passport_blue
     app.register_blueprint(passport_blue)
 
@@ -50,8 +51,17 @@ def create_app(config_name):
     from info.modules.news import new_blue
     app.register_blueprint(new_blue)
 
+    # 将用户蓝图注册到app中
     from info.modules.user import user_blue
     app.register_blueprint(user_blue)
+
+    # 将蓝图注册到app中
+    from info.modules.profile import profile_blue
+    app.register_blueprint(profile_blue)
+
+    # 将管理员蓝图注册到app中
+    from info.modules.admin import admin_blue
+    app.register_blueprint(admin_blue)
 
     # 使用请求钩子拦截所有请求，通过在cookie中设置csrs_token
     # @app.after_request
@@ -67,7 +77,7 @@ def create_app(config_name):
 
 def log_file(LEVEL_NAME):
     logging.basicConfig(level=LEVEL_NAME)
-    file_log_handler = RotatingFileHandler('logs/log', maxBytes=1024 * 1024 * 100, backupCount=100)
+    file_log_handler = RotatingFileHandler('logs/logs', maxBytes=1024 * 1024 * 100, backupCount=100)
     formatter = logging.Formatter('levelname:%(levelname)s filename: %(filename)s '
                            'outputNumber: [%(lineno)d]  thread: %(threadName)s output msg:  %(message)s')
     file_log_handler.setFormatter(formatter)
