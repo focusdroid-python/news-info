@@ -2,10 +2,20 @@
 flask新闻项目
 
 ### flask生成数据库迁移表
-```python
+```
 python manager.py db init
 python manager.py db migrate -m 'initial'
 python manager.py db upgrade
+
+出现上面错误的原因是，flask-migrate找不到“a1c25fe0fc0e”标识的修订版，我们只要在命令中注明所提示丢失的标识号就行!
+我们在shell命令行窗口可以依次使用如下命令：
+
+python app.py db revision --rev-id <将提示的标识号填进这个位置，如上面的a1c25fe0fc0e>
+python app.py db migrate
+python app.py db upgrade
+
+pip install 包名 -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
+pip install mysqlclient -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
 ```
 
 

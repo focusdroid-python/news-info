@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
 from flask_session import Session
@@ -37,6 +37,7 @@ def create_app(config_name):
     Session(app)
 
     # 使用CSRFProtect 保护应用
+    # if not request.url.endswith('/user/get_csrf_token'):
     # CSRFProtect(app)
 
     # 将首页蓝图注册到app中

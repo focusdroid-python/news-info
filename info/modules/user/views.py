@@ -5,6 +5,9 @@ from info.utils.response_code import RET
 from info.models import User, News
 from info import db
 
+@user_blue.route('/get_csrf_token',methods=['POST'])
+def get_csrf_token():
+    return jsonify(code='ok', data={}, message='获取成功')
 
 @user_blue.route('/collection')
 @user_login_data
@@ -58,8 +61,6 @@ def collection():
 
     # 7. 返回响应
     return jsonify(errno=RET.OK, data=data, message='success')
-
-
 
 @user_blue.route('/password', methods=['GET', 'POST'])
 @user_login_data

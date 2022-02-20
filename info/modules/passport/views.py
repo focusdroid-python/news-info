@@ -18,6 +18,7 @@ def logout():
     '''用户退出'''
     # 1. 清楚session信息
     session.pop('user_id', None)
+    session.pop('is_admin', None)
 
     # 2. 返回响应
     return jsonify(code=RET.OK, data={}, message='退出成功')
