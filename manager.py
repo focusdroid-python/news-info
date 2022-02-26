@@ -1,3 +1,4 @@
+from flask import current_app
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from info import create_app, db, models # 导入modules 让程序知道有modules存在
@@ -32,7 +33,7 @@ def create_superuser(username, password):
     try:
         db.session.add(admin)
         db.session.commit()
-    except Exceprion as e:
+    except Exception as e:
         current_app.logger.error(e)
         return '创建失败'
 

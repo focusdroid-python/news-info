@@ -3,8 +3,112 @@ import time
 from datetime import datetime
 from . import admin_blue
 from flask import request, session, jsonify, current_app
-from info.models import User
+from info.models import User, News
 from info.utils.response_code import RET
+
+
+@admin_blue.route('/user_review_detail')
+def user_review_detail():
+    '''
+    # 1.
+    :return:
+    '''
+    id = request.args.get('id')
+
+    try:
+        news = News.query.get(int(id))
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(code=RET.DBERR, message='查询数据库失败')
+
+    data = {
+        'data': news.to_dict()
+    }
+
+    return jsonify(code=RET.OK, data=data, message='success')
+
+
+@admin_blue.route('/user_review')
+def user_review():
+    '''
+    # 1. 获取参数
+    # 2. 查询数据并进行分页
+    # 3. 格式化数据
+    # 4. 返回数据
+    :return:
+    '''
+    page_num = request.args.get('page_num', '1')
+    page_size = request.args.get('page_size', '10')
+
+    # 2. 校验参数(参数类型转换)
+    try:
+        page_num = int(page_num)
+        page_size = int(page_size)
+    except Exception as e:
+        page_num = 1
+        page_size = 10
+        current_app.logger.error(e)
+
+    try:
+        news = News.query.filter().order_by(News.create_time.desc()).paginate(page_num, page_size, False)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(code=RET.DBERR, message='查询数据库失败')
+
+    total = news.total
+    current = news.page
+    items = news.items
+
+    news_list = []
+    for item in items:
+        news_list.append(item.to_basic_dict())
+
+    data = {
+        'total': total,
+        'current': current,
+        'list': news_list
+    }
+    return jsonify(code=RET.OK, data=data, message='cuccess')
+
+
+
+@admin_blue.route('/user_list')
+def user_list():
+    '''
+    # 1. 获取
+    :return:
+    '''
+    page_num = request.args.get('page_num', '1')
+    page_size = request.args.get('page_size', '10')
+
+    # 2. 校验参数(参数类型转换)
+    try:
+        page_num = int(page_num)
+        page_size = int(page_size)
+    except Exception as e:
+        page_num = 1
+        page_size = 10
+        current_app.logger.error(e)
+
+    user = User.query.filter(User.is_admin == 0).order_by(User.create_time.desc()).paginate(page_num, page_size, False)
+
+    total = user.pages
+    current = user.page
+    items = user.items
+
+    user_list = []
+    for item in items:
+        user_list.append(item.to_dict())
+
+    data = {
+        'total': total,
+        'current': current,
+        'list': user_list
+    }
+
+    return jsonify(code=RET.OK, data=data, message='success')
+
+
 
 @admin_blue.route('/user_count', methods=['GET'])
 def user_count():
@@ -52,7 +156,7 @@ def user_count():
         current_app.logger.error(e)
         return jsonify(code=RET.DBERR, data={}, message='获取月活失败')
     # 4. 获取活跃时间段内，对应的活跃人数
-    for i in range(0,7):
+    for i in range(0, 7):
         pass
     # 5. 携带数据渲染页面
     data = {

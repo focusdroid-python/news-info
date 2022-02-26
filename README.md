@@ -212,6 +212,20 @@ pip install mysqlclient -i http://pypi.douban.com/simple/ --trusted-host pypi.do
    - 将对象列表转成对象
    - 
 
+### 获取用户列表
+   - 请求路径 /admin/user_list
+   - 请求方式 get
+   - 请求参数 page_num page_size
+   - 返回数据
+
+
+### 获取/设置新闻审核
+   - 请求路径 /admin/user_review
+   - 请求方式 get
+   - 请求参数 status 0 未审核 1 审核通过 2：正在审核 3 下架
+     - page_num page_size
+   - 返回数据
+   - 
 
 
 
