@@ -192,6 +192,11 @@ class Category(BaseModel, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # 分类编号
     name = db.Column(db.String(64), nullable=False)  # 分类名
+    status = db.Column(db.String(10), db.Enum(
+            "0",  # 删除
+            "1"  # 正常显示
+        ),
+        default="1")
     news_list = db.relationship('News', backref='category', lazy='dynamic')
 
     def to_dict(self):

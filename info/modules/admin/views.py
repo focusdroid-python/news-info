@@ -3,8 +3,141 @@ import time
 from datetime import datetime
 from . import admin_blue
 from flask import request, session, jsonify, current_app
-from info.models import User, News
+from info.models import User, News, Category
 from info.utils.response_code import RET
+from info import db
+
+@admin_blue.route('/delete_category', methods=['POST'])
+def delete_category():
+    '''
+    删除新闻分类 逻辑删除
+    :return:
+    '''
+    id = request.json.get('id')
+
+    try:
+        cate_query = Category.query.filter(Category.id == id).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(code=RET.DBERR, message='查询失败')
+
+    if not cate_query:
+        return jsonify(code=RET.DBERR, message='没有查询到相关数据')
+
+
+    # cate = Category.query.filter(Category.id == id)
+
+    cate_query.status = 0 # 罗技删除
+    try:
+        db.session.add(cate_query)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(code=RET.DBERR, message='delete error')
+
+    return jsonify(code=RET.OK, message='delete success')
+
+
+@admin_blue.route('/add_new_category', methods=['POST'])
+def add_new_category():
+    '''
+    添加新闻分类
+    :return:
+    '''
+    cate_name = request.json.get('cate') # 分类
+
+    cate = Category()
+    is_cate = Category.query.filter(Category.name == cate_name, Category.status != 0).first()
+    if is_cate:
+        return jsonify(code=RET.DBERR, message='改名称已经存在')
+    cate.name = cate_name
+    db.session.add(cate)
+    db.session.commit()
+
+    return jsonify(code=RET.OK, message='success')
+
+@admin_blue.route('/news_category')
+def news_category():
+    '''
+        新闻分类管理
+    :return:
+    '''
+    page_num = request.args.get('page_num', '1')
+    page_size = request.args.get('page_size', '10')
+
+    # 2. 校验参数(参数类型转换)
+    try:
+        page_num = int(page_num)
+        page_size = int(page_size)
+    except Exception as e:
+        page_num = 1
+        page_size = 10
+        current_app.logger.error(e)
+
+    category = Category.query.filter(Category.status == 1).order_by(Category.create_time.desc()).paginate(page_num, page_size, False)
+
+    total = category.total
+    current = category.page
+    items = category.items
+
+    category_list = []
+    for item in items:
+        category_list.append(item.to_dict())
+
+    data = {
+        'total': total,
+        'current': current,
+        'list': category_list
+    }
+    return jsonify(code=RET.OK, data=data, message='success')
+
+
+
+@admin_blue.route('/search_content')
+def search_content():
+    '''
+        # 1. 获取参数
+        # 2. 校验参数
+        # 3. 查询符合条件的数据，分页
+        # 4. 格式化数据
+        # 5. 返回数据
+    :return:
+    '''
+    # 1. 获取参数
+    value = request.args.get('value')
+    page_num = request.args.get('page_num', '1')
+    page_size = request.args.get('page_size', '10')
+
+    # 2. 校验参数(参数类型转换)
+    try:
+        page_num = int(page_num)
+        page_size = int(page_size)
+    except Exception as e:
+        page_num = 1
+        page_size = 10
+        current_app.logger.error(e)
+
+    filters = [News.status != 0]
+    # 2. 校验参数
+    if value:
+        filters.append(News.title.contains(value))
+    # 3. 查询符合条件的数据，分页
+    news = News.query.filter(*filters).order_by(News.create_time.desc()).paginate(page_num, page_size, False)
+
+    # 4. 格式化数据
+    total = news.total
+    current = news.page
+    items = news.items
+    search_list = []
+    for item in items:
+        search_list.append(item.to_dict())
+    # 5. 返回数据
+    data = {
+        'total': total,
+        'current': current,
+        'list': search_list
+    }
+    return jsonify(code=RET.OK, data=data, message='success')
 
 
 @admin_blue.route('/user_review_detail')
@@ -26,7 +159,6 @@ def user_review_detail():
     }
 
     return jsonify(code=RET.OK, data=data, message='success')
-
 
 @admin_blue.route('/user_review')
 def user_review():
@@ -70,8 +202,6 @@ def user_review():
     }
     return jsonify(code=RET.OK, data=data, message='cuccess')
 
-
-
 @admin_blue.route('/user_list')
 def user_list():
     '''
@@ -107,8 +237,6 @@ def user_list():
     }
 
     return jsonify(code=RET.OK, data=data, message='success')
-
-
 
 @admin_blue.route('/user_count', methods=['GET'])
 def user_count():
@@ -177,7 +305,6 @@ class MyEncoder(json.JSONEncoder):
         if isinstance(obj, bytes):
             return str(obj, encoding='utf-8')
         return json.JSONEncoder.default(self, obj)
-
 
 @admin_blue.route('/login', methods=['POST'])
 def admin_login():
